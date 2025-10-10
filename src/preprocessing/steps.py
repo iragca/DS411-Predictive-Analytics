@@ -3,6 +3,9 @@ import re
 import contractions
 from autocorrect import Speller
 from beartype import beartype
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from nltk.stem.snowball import SnowballStemmer
 
 
 @beartype
@@ -86,7 +89,9 @@ def remove_punctuation(text: str) -> str:
 
 
 @beartype
-def correct_spelling(text: str, speller: Speller = Speller(lang="en")) -> str:
+def correct_spelling(
+    text: str | list[str], speller: Speller = Speller(lang="en")
+) -> str | list[str]:
     """
     Correct spelling in the text using an autocorrect speller.
 
@@ -102,6 +107,9 @@ def correct_spelling(text: str, speller: Speller = Speller(lang="en")) -> str:
     str
         The corrected string.
     """
+    if isinstance(text, list):
+        return [speller(t) for t in text]
+
     return speller(text)
 
 
@@ -204,3 +212,64 @@ def remove_repeated_characters(text: str) -> str:
     'yeess!!'
     """
     return re.sub(r"(.)\1{2,}", r"\1\1", text)
+
+
+@beartype
+def remove_stopwords(tokens: list[str]) -> list[str]:
+    """
+    Remove common stopwords from a list of tokens.
+
+    Parameters
+    ----------
+    tokens : list of str
+        List of input tokens.
+    stop_words : set of str, optional
+        Set of stopwords to remove. If None, uses NLTK's English stopwords.
+
+    Returns
+    -------
+    list of str
+        List of tokens with stopwords removed.
+    """
+    stop_words: list[str] = stopwords.words("english")
+    return [token for token in tokens if token not in stop_words]
+
+
+@beartype
+def stem_tokens(tokens: list[str]) -> list[str]:
+    """
+    Apply stemming to a list of tokens using the Snowball stemmer.
+
+    Parameters
+    ----------
+    tokens : list of str
+        List of input tokens.
+    language : str, optional
+        Language for the stemmer, by default "english".
+
+    Returns
+    -------
+    list of str
+        List of stemmed tokens.
+    """
+    stemmer = SnowballStemmer(language="english")
+    return [stemmer.stem(token) for token in tokens]
+
+
+@beartype
+def lemmatize_tokens(tokens: list[str]) -> list[str]:
+    """
+    Apply lemmatization to a list of tokens using the WordNet lemmatizer.
+
+    Parameters
+    ----------
+    tokens : list of str
+        List of input tokens.
+
+    Returns
+    -------
+    list of str
+        List of lemmatized tokens.
+    """
+    lemmatizer = WordNetLemmatizer()
+    return [lemmatizer.lemmatize(token) for token in tokens]
