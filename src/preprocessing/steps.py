@@ -1,94 +1,206 @@
 import re
-from typing import Callable, Generic, TypeVar
 
 import contractions
 from autocorrect import Speller
 from beartype import beartype
 
-T = TypeVar("T")  # Input type of the current step
-U = TypeVar("U")  # Output type of the current step
-V = TypeVar("V")  # Output type of the next step
+
+@beartype
+def to_lowercase(text: str) -> str:
+    """
+    Convert all characters in the string to lowercase.
+
+    Parameters
+    ----------
+    text : str
+        Input string to be lowercased.
+
+    Returns
+    -------
+    str
+        The lowercased string.
+    """
+    return text.lower()
 
 
-class PreprocessingStep(Generic[T, U]):
-    """A class representing a single preprocessing step.
+@beartype
+def strip_whitespace(text: str) -> str:
+    """
+    Remove leading and trailing whitespace from the string.
 
-    To implement a preprocessing step, subclass this and implement then
-    initialize the parent class with the function that performs the step.
+    Parameters
+    ----------
+    text : str
+        Input string.
+
+    Returns
+    -------
+    str
+        The trimmed string.
+    """
+    return text.strip()
+
+
+@beartype
+def remove_punctuation(text: str) -> str:
+    """
+    Remove all punctuation characters from the string.
+
+    Parameters
+    ----------
+    text : str
+        Input string.
+
+    Returns
+    -------
+    str
+        The string with punctuation removed.
+
+    Notes
+    -----
+    The regex pattern used is:
+
+    ``r"[^\\w\\s]"``
+
+    - ``\\w`` matches word characters (letters, digits, and underscore).
+    - ``\\s`` matches any whitespace character.
+    - ``[^...]`` is a negated character class, meaning "anything *not* in this set".
+
+    So the pattern matches any character that is **not**:
+    - a letter
+    - a digit
+    - an underscore
+    - whitespace
+
+    All matched characters are replaced with an empty string.
+
+    Examples
+    --------
+    >>> remove_punctuation("Hello, world!!!")
+    'Hello world'
+    >>> remove_punctuation("Wait... what?!")
+    'Wait what'
     """
 
-    def __init__(self, func: Callable[[T], U]) -> None:
-        self.func = func
-
-    def __call__(self, input: T) -> U:
-        return self.func(input)
-
-    def __or__(self, other: "PreprocessingStep[U, V]") -> "PreprocessingStep[T, V]":
-        return PreprocessingStep(lambda text: other(self(text)))
+    return re.sub(r"[^\w\s]", "", text)
 
 
-class ToLowercase(PreprocessingStep):
-    def __init__(self) -> None:
-        super().__init__(self.to_lowercase)
+@beartype
+def correct_spelling(text: str, speller: Speller = Speller(lang="en")) -> str:
+    """
+    Correct spelling in the text using an autocorrect speller.
 
-    @beartype
-    def to_lowercase(self, text: str) -> str:
-        return text.lower()
+    Parameters
+    ----------
+    text : str
+        Input string to correct.
+    speller : Speller, optional
+        Autocorrect speller instance to use, by default a new English `Speller`.
 
-
-class StripWhitespace(PreprocessingStep):
-    def __init__(self) -> None:
-        super().__init__(self.strip_whitespace)
-
-    @beartype
-    def strip_whitespace(self, text: str) -> str:
-        return text.strip()
-
-
-class RemovePunctuation(PreprocessingStep):
-    def __init__(self) -> None:
-        super().__init__(self.remove_punctuation)
-
-    @beartype
-    def remove_punctuation(self, text: str) -> str:
-        return re.sub(r"[^\w\s]", "", text)
+    Returns
+    -------
+    str
+        The corrected string.
+    """
+    return speller(text)
 
 
-class CorrectSpelling(PreprocessingStep):
-    def __init__(self, speller: Speller = Speller(lang="en")) -> None:
-        self.speller = speller
-        super().__init__(self.correct_spelling)
+@beartype
+def expand_contractions(text: str) -> str:
+    """
+    Expand contractions in the input string.
 
-    @beartype
-    def correct_spelling(self, text: str) -> str:
-        return self.speller(text)
+    Examples
+    --------
+    "can't" -> "cannot"
+
+    Parameters
+    ----------
+    text : str
+        Input string.
+
+    Returns
+    -------
+    str
+        The expanded string.
+
+    Raises
+    ------
+    ValueError
+        If the contractions library returns a non-string result.
+    """
+    result = contractions.fix(text)
+    if not isinstance(result, str):
+        raise ValueError("Contractions.fix did not return a string")
+    return result
 
 
-class ExpandContractions(PreprocessingStep):
-    def __init__(self) -> None:
-        super().__init__(self.expand_contractions)
+@beartype
+def tokenize(text: str) -> list[str]:
+    """
+    Split the input string into tokens by whitespace.
 
-    @beartype
-    def expand_contractions(self, text: str) -> str:
-        result = contractions.fix(text)
-        if not isinstance(result, str):
-            raise ValueError("Contractions.fix did not return a string")
-        return result
+    Parameters
+    ----------
+    text : str
+        Input string.
 
-
-class Tokenize(PreprocessingStep):
-    def __init__(self) -> None:
-        super().__init__(self.tokenize)
-
-    @beartype
-    def tokenize(self, text: str) -> list[str]:
-        return text.split()
+    Returns
+    -------
+    list of str
+        List of tokens.
+    """
+    return text.split()
 
 
-class RemoveRepeatedCharacters(PreprocessingStep):
-    def __init__(self) -> None:
-        super().__init__(self.remove_repeated_characters)
+@beartype
+def remove_repeated_characters(text: str) -> str:
+    """
+    Reduce any character repeated 3 or more times down to 2 occurrences.
 
-    @beartype
-    def remove_repeated_characters(self, text: str) -> str:
-        return re.sub(r"(.)\1{2,}", r"\1\1", text)
+    Examples
+    --------
+    "coooool" -> "coool"
+
+    Parameters
+    ----------
+    text : str
+        Input string.
+
+    Returns
+    -------
+    str
+        The normalized string.
+
+    Notes
+    -----
+    This function uses the following regular expression:
+
+        ``r"(.)\\1{2,}"``
+
+    Here's what each part does:
+
+    - ``(.)``
+      Captures any single character as Group 1.
+
+    - ``\\1``
+      A backreference to the character captured by Group 1, ensuring the same
+      character is matched again.
+
+    - ``{2,}``
+      Specifies that the backreference must appear at least two more times.
+      In total, this matches runs of **three or more** of the same character.
+
+    The replacement string ``r"\\1\\1"`` ensures that any run of three or more
+    repeated characters is reduced to exactly two.
+
+    Examples
+    --------
+    >>> remove_repeated_characters("soooo coooool")
+    'soo coool'
+    >>> remove_repeated_characters("noooooooo wayyyyy")
+    'noo wayy'`
+    >>> remove_repeated_characters("yeeeessss!!!")
+    'yeess!!'
+    """
+    return re.sub(r"(.)\1{2,}", r"\1\1", text)
