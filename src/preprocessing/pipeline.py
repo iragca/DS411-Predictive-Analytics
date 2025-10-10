@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Any, Union
 
 from .steps import PreprocessingStep
 
@@ -7,7 +7,7 @@ class Pipeline:
     def __init__(self, steps: list[PreprocessingStep]):
         self.steps = steps
 
-    def __call__(self, input: str) -> str:
+    def __call__(self, input: Any) -> Any:
         value = input
         for step in self.steps:
             value = step(value)
