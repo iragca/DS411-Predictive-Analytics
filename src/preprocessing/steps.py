@@ -97,14 +97,14 @@ def correct_spelling(
 
     Parameters
     ----------
-    text : str
+    text : str or list of str
         Input string to correct.
     speller : Speller, optional
         Autocorrect speller instance to use, by default a new English `Speller`.
 
     Returns
     -------
-    str
+    str or list of str
         The corrected string.
     """
     if isinstance(text, list):
