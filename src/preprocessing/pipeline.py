@@ -12,6 +12,26 @@ class Pipeline:
     ----------
     steps : list of Callable[[Any], Any]
         A list of callables that will be applied in sequence.
+
+    Examples
+    --------
+    >>> from src.preprocessing import steps as ps
+    >>> pipeline = Pipeline([
+    ...     ps.to_lowercase,
+    ...     ps.remove_punctuation,
+    ...     ps.tokenize,
+    ...     ps.remove_stopwords,
+    ... ])
+    >>> result = pipeline("This is an example sentence, with punctuation!")
+    >>> print(result)
+    ['example', 'sentence', 'punctuation']
+    >>> pipeline2 = Pipeline([
+    ...     lambda x: x * 5,
+    ...     lambda x: x + 2,
+    ... ])
+    >>> result = pipeline2(3)
+    >>> print(result)
+    17
     """
 
     def __init__(self, steps: list[Callable[[Any], Any]]):
