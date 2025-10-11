@@ -205,7 +205,7 @@ def remove_repeated_characters(text: str) -> str:
     Examples
     --------
     >>> remove_repeated_characters("soooo coooool")
-    'soo coool'
+    'soo cool'
     >>> remove_repeated_characters("noooooooo wayyyyy")
     'noo wayy'`
     >>> remove_repeated_characters("yeeeessss!!!")
