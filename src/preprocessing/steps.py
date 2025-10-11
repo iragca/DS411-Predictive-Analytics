@@ -168,7 +168,7 @@ def remove_repeated_characters(text: str) -> str:
 
     Examples
     --------
-    "coooool" -> "coool"
+    "coooool" -> "cool"
 
     Parameters
     ----------
