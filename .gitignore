@@ -19,3 +19,6 @@ wheels/
 
 # Test Notebooks
 *.test.ipynb
+
+# media
+*.epub
