@@ -223,8 +223,6 @@ def remove_stopwords(tokens: list[str]) -> list[str]:
     ----------
     tokens : list of str
         List of input tokens.
-    stop_words : set of str, optional
-        Set of stopwords to remove. If None, uses NLTK's English stopwords.
 
     Returns
     -------
