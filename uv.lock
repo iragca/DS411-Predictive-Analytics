@@ -778,19 +778,24 @@ wheels = [
 
 [[package]]
 name = "iragca"
-version = "0.0.2"
+version = "0.2.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "matplotlib" },
+    { name = "pydantic" },
+    { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/64/4b/300593727b79664eed9102f8457b89247ec13e2ebb45819c9ea0018d48a6/iragca-0.0.2.tar.gz", hash = "sha256:ec6fe4a1f761c868b6057f51bc1709884816d873930153fbc7b76f6ea274dc22", size = 5443, upload-time = "2025-11-22T11:44:58.542Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/57/21/a0310d3a999b78f2a156138caa303ceba50852af6f923bf276cec6de8cee/iragca-0.2.3.tar.gz", hash = "sha256:62a9cbfa14dd3ab736743e660487196dca55be1965ad8a260b1e439f43b66aba", size = 7817, upload-time = "2025-11-23T06:46:58.1Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/bc/e5/7c2fbca50d16b27e0dd539fafd06d85c1c61e93f04996aa57e63662dd846/iragca-0.0.2-py3-none-any.whl", hash = "sha256:5dda04cf1003af3008bfc0903baba719f4db64629af57ff46881403e42c53ec0", size = 6940, upload-time = "2025-11-22T11:44:57.216Z" },
+    { url = "https://files.pythonhosted.org/packages/05/f7/7e883c292eb90e3a99e11af85c4e53006a247cd0fc663855760f890f8d31/iragca-0.2.3-py3-none-any.whl", hash = "sha256:199a1bedcd66e04c989e0bb212ff273c6c07772a85000b4422b5c04752382430", size = 9249, upload-time = "2025-11-23T06:46:56.584Z" },
 ]
 
 [package.optional-dependencies]
 matplotlib = [
     { name = "matplotlib" },
+]
+ml = [
+    { name = "tqdm" },
 ]
 
 [[package]]
@@ -2492,7 +2497,7 @@ dependencies = [
     { name = "contractions" },
     { name = "dotenv" },
     { name = "ebooklib" },
-    { name = "iragca", extra = ["matplotlib"] },
+    { name = "iragca", extra = ["matplotlib", "ml"] },
     { name = "loguru" },
     { name = "nltk" },
     { name = "openpyxl" },
@@ -2529,7 +2534,7 @@ requires-dist = [
     { name = "contractions", specifier = ">=0.1.73" },
     { name = "dotenv", specifier = ">=0.9.9" },
     { name = "ebooklib", specifier = ">=0.20" },
-    { name = "iragca", extras = ["matplotlib"], specifier = ">=0.0.1" },
+    { name = "iragca", extras = ["matplotlib", "ml"], specifier = ">=0.0.1" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "nltk", specifier = ">=3.9.1" },
     { name = "openpyxl", specifier = ">=3.1.5" },
