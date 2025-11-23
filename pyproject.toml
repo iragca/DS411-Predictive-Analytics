@@ -29,6 +29,7 @@ dependencies = [
     "spacy>=3.8.8",
     "sqlalchemy>=2.0.43",
     "torch>=2.9.1",
+    "tqdm>=4.67.1",
     "typer>=0.16.1",
 ]
 
